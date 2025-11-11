@@ -1,0 +1,55 @@
+// datasource and generator
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Models
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Item {
+  id                 Int      @id @default(autoincrement())
+  name               String
+  category           String
+  quantity           Int      @default(0)
+  requiredPerProduct Int      @default(0) // used for inventory calculation
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  productLinks       ProductComponent[]
+}
+
+// Simple product model
+model Product {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  components ProductComponent[]
+}
+
+// Map a product to an inventory item with required quantity per product
+model ProductComponent {
+  id         Int    @id @default(autoincrement())
+  productId  Int
+  itemId     Int
+  required   Int    @default(1)
+
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  item       Item    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, itemId])
+}
+
+
