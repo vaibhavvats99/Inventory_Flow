@@ -1,7 +1,10 @@
 import Axios from 'axios';
 
+// Use environment variable for API URL, fallback to localhost for development
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001';
+
 const api = Axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001',
+  baseURL: API_URL,
 });
 
 api.interceptors.request.use((config) => {

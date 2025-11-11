@@ -103,6 +103,38 @@ Inventory_Flow_Project/
     └── App.jsx          # Main app component
 ```
 
+## Deployment
+
+### Backend (Render)
+
+1. Push your backend code to GitHub
+2. Connect your GitHub repo to Render
+3. Set environment variables in Render:
+   - `DATABASE_URL` (if using external database)
+   - `JWT_SECRET` (for production, use a strong random string)
+   - `PORT` (Render sets this automatically)
+4. Your backend will be available at: `https://inventory-flow.onrender.com`
+
+### Frontend (Vercel/Netlify/Render)
+
+1. Push your frontend code to GitHub
+2. Connect your GitHub repo to your hosting service
+3. Set environment variable:
+   - `VITE_API_BASE_URL=https://inventory-flow.onrender.com`
+4. Build command: `npm run build`
+5. Output directory: `dist`
+
+**Important:** Make sure to set the `VITE_API_BASE_URL` environment variable in your frontend hosting service to point to your Render backend URL.
+
+### Local Development
+
+For local development, create a `.env` file in the frontend folder:
+```
+VITE_API_BASE_URL=http://localhost:5001
+```
+
+The code will automatically use `http://localhost:5001` if no environment variable is set.
+
 ## Notes
 
 - Each user has their own isolated data
