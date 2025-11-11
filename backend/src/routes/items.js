@@ -3,9 +3,10 @@ import prisma from '../lib/prisma.js';
 
 const router = Router();
 
-// GET /api/items (public)
+// GET /api/items - only user's items
 router.get('/', async (req, res) => {
   try {
+    const userId = req.userId;
     const {
       page = '1',
       limit = '10',
@@ -21,6 +22,7 @@ router.get('/', async (req, res) => {
 
     const where = {
       AND: [
+        { userId },
         search
           ? { name: { contains: String(search), mode: 'insensitive' } }
           : {},
@@ -43,9 +45,10 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/items (public)
+// POST /api/items
 router.post('/', async (req, res) => {
   try {
+    const userId = req.userId;
     const { name, category, quantity = 0, requiredPerProduct = 0 } = req.body;
     if (!name || !category) {
       return res.status(400).json({ message: 'Name and category are required' });
@@ -56,6 +59,7 @@ router.post('/', async (req, res) => {
         category,
         quantity: Number(quantity) || 0,
         requiredPerProduct: Number(requiredPerProduct) || 0,
+        userId,
       },
     });
     return res.status(201).json(item);
@@ -65,10 +69,20 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT /api/items/:id (public)
+// PUT /api/items/:id
 router.put('/:id', async (req, res) => {
   try {
+    const userId = req.userId;
     const { id } = req.params;
+    
+    // Verify item belongs to user
+    const existingItem = await prisma.item.findFirst({
+      where: { id: Number(id), userId },
+    });
+    if (!existingItem) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+    
     const { name, category, quantity, requiredPerProduct } = req.body;
     const item = await prisma.item.update({
       where: { id: Number(id) },
@@ -91,10 +105,20 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE /api/items/:id (public)
+// DELETE /api/items/:id
 router.delete('/:id', async (req, res) => {
   try {
+    const userId = req.userId;
     const { id } = req.params;
+    
+    // Verify item belongs to user
+    const existingItem = await prisma.item.findFirst({
+      where: { id: Number(id), userId },
+    });
+    if (!existingItem) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+    
     await prisma.item.delete({ where: { id: Number(id) } });
     return res.json({ message: 'Item deleted' });
   } catch (err) {

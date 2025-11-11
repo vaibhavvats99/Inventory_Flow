@@ -5,6 +5,7 @@ import authRoutes from './src/routes/auth.js';
 import itemRoutes from './src/routes/items.js';
 import inventoryRoutes from './src/routes/inventory.js';
 import productRoutes from './src/routes/products.js';
+import { verifyJWT } from './src/middleware/auth.js';
 
 dotenv.config();
 
@@ -19,11 +20,13 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'inventoryflow-backend' });
 });
 
-// Routes
+// Public routes (no auth required)
 app.use('/api/auth', authRoutes);
-app.use('/api/items', itemRoutes);
-app.use('/api/inventory', inventoryRoutes);
-app.use('/api/products', productRoutes);
+
+// Protected routes (require authentication)
+app.use('/api/items', verifyJWT, itemRoutes);
+app.use('/api/inventory', verifyJWT, inventoryRoutes);
+app.use('/api/products', verifyJWT, productRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5001;

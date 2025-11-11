@@ -3,12 +3,16 @@ import prisma from '../lib/prisma.js';
 
 const router = Router();
 
-// GET /api/inventory/calculate (public)
-// Calculates how many complete products can be made based on items where requiredPerProduct > 0
-router.get('/calculate', async (_req, res) => {
+// GET /api/inventory/calculate
+// Calculates how many complete products can be made based on user's items where requiredPerProduct > 0
+router.get('/calculate', async (req, res) => {
   try {
+    const userId = req.userId;
     const components = await prisma.item.findMany({
-      where: { requiredPerProduct: { gt: 0 } },
+      where: { 
+        userId,
+        requiredPerProduct: { gt: 0 } 
+      },
       select: { name: true, quantity: true, requiredPerProduct: true },
     });
 

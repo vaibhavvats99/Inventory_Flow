@@ -1,7 +1,7 @@
 import Axios from 'axios';
 
 const api = Axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001',
 });
 
 api.interceptors.request.use((config) => {
@@ -11,6 +11,23 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Handle 401 errors - redirect to login if token is invalid
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear invalid token and redirect to login
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      // Only redirect if we're not already on login/signup page
+      if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;
 
