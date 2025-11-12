@@ -1,6 +1,7 @@
 
 
-Hosted Url - https://inventory-flow-six.vercel.app/
+Frontend Url - https://inventory-flow-six.vercel.app/
+Backend url - https://inventory-flow.onrender.com
 
 1. Project Title
 InventoryFlow – Product Library Management System
