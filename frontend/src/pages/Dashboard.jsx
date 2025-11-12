@@ -17,7 +17,6 @@ export default function Dashboard() {
   const [showLinkForm, setShowLinkForm] = useState(true);
   const [toast, setToast] = useState(null);
 
-  // Calculate low stock items
   function getLowStock() {
     if (!selected) return [];
     return parts.parts

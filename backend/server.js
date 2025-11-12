@@ -11,29 +11,23 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Root route
 app.get('/', (req, res) => {
   res.send('Server is running successfully!');
 });
 
-// Health check
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'inventoryflow-backend' });
 });
 
-// Public routes (no auth required)
 app.use('/api/auth', authRoutes);
 
-// Protected routes (require authentication)
 app.use('/api/items', verifyJWT, itemRoutes);
 app.use('/api/inventory', verifyJWT, inventoryRoutes);
 app.use('/api/products', verifyJWT, productRoutes);
 
-// Start server
 const PORT = process.env.PORT || 5001;
 
 async function start() {

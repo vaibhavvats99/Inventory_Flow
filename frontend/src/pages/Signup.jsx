@@ -19,16 +19,12 @@ export default function Signup() {
       }
     } catch (err) {
       console.error('Signup error:', err);
-      // Better error handling
       if (err.response) {
-        // Server responded with error
         const msg = err.response.data?.message || 'Signup failed';
         setError(msg);
       } else if (err.request) {
-        // Request made but no response (server might be down)
         setError('Unable to connect to server. Please check if the backend is running.');
       } else {
-        // Something else happened
         setError(err.message || 'Signup failed');
       }
     } finally {

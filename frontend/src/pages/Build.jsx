@@ -29,7 +29,6 @@ export default function Build() {
 
   const enough = result && result.canBuild >= qty;
   
-  // Find the part that limits production
   function getLimitingPart() {
     if (!result || !result.details || result.details.length === 0) return null;
     let limiting = result.details[0];

@@ -3,7 +3,6 @@ import prisma from '../lib/prisma.js';
 
 const router = Router();
 
-// GET /api/products (list) - only user's products
 router.get('/', async (req, res) => {
   try {
     const userId = req.userId;
@@ -18,7 +17,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/products (create)
 router.post('/', async (req, res) => {
   try {
     const userId = req.userId;
@@ -28,7 +26,7 @@ router.post('/', async (req, res) => {
     const { name } = req.body;
     if (!name) return res.status(400).json({ message: 'Name required' });
     
-    // Verify user exists before creating product
+    
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       return res.status(401).json({ message: 'User not found. Please log in again.' });
@@ -55,7 +53,7 @@ router.get('/:id/parts', async (req, res) => {
     const userId = req.userId;
     const productId = Number(req.params.id);
     
-    // Verify product belongs to user
+    
     const product = await prisma.product.findFirst({
       where: { id: productId, userId },
     });
@@ -68,7 +66,7 @@ router.get('/:id/parts', async (req, res) => {
       include: { item: true },
     });
     
-    // Filter items to only include user's items
+    
     const userRows = rows.filter(row => row.item.userId === userId);
     const parts = userRows.map((r) => ({
       itemId: r.itemId,
@@ -88,13 +86,12 @@ router.get('/:id/parts', async (req, res) => {
   }
 });
 
-// POST /api/products/:id/parts (add/update a component requirement)
 router.post('/:id/parts', async (req, res) => {
   try {
     const userId = req.userId;
     const productId = Number(req.params.id);
     
-    // Verify product belongs to user
+    
     const product = await prisma.product.findFirst({
       where: { id: productId, userId },
     });
@@ -106,12 +103,12 @@ router.post('/:id/parts', async (req, res) => {
     if ((itemId == null && !itemName) || required == null) {
       return res.status(400).json({ message: 'Provide itemId or itemName and required' });
     }
-    // Resolve item by id or name (create if missing when name provided)
+    
     let resolvedItemId;
     if (itemId != null) {
       const numberId = Number(itemId);
       if (Number.isNaN(numberId)) return res.status(400).json({ message: 'Invalid itemId' });
-      // Verify item belongs to user and optionally update stock
+      
       const item = await prisma.item.findFirst({ where: { id: numberId, userId } });
       if (!item) {
         return res.status(404).json({ message: 'Item not found' });
@@ -144,14 +141,13 @@ router.post('/:id/parts', async (req, res) => {
   }
 });
 
-// DELETE /api/products/:id/parts/:itemId
 router.delete('/:id/parts/:itemId', async (req, res) => {
   try {
     const userId = req.userId;
     const productId = Number(req.params.id);
     const itemId = Number(req.params.itemId);
     
-    // Verify product belongs to user
+    
     const product = await prisma.product.findFirst({
       where: { id: productId, userId },
     });
@@ -171,13 +167,12 @@ router.delete('/:id/parts/:itemId', async (req, res) => {
   }
 });
 
-// GET /api/products/:id/can-build
 router.get('/:id/can-build', async (req, res) => {
   try {
     const userId = req.userId;
     const productId = Number(req.params.id);
     
-    // Verify product belongs to user
+    
     const product = await prisma.product.findFirst({
       where: { id: productId, userId },
     });
@@ -190,7 +185,7 @@ router.get('/:id/can-build', async (req, res) => {
       include: { item: { select: { quantity: true, name: true, userId: true } } },
     });
     
-    // Filter items to only include user's items
+    
     const userRows = rows.filter(row => row.item.userId === userId);
     const details = userRows.map((r) => ({
       name: r.item.name,
@@ -209,8 +204,6 @@ router.get('/:id/can-build', async (req, res) => {
   }
 });
 
-// POST /api/products/:id/build  { quantity }
-// Subtracts inventory for the selected product if enough stock is available
 router.post('/:id/build', async (req, res) => {
   try {
     const userId = req.userId;
@@ -220,7 +213,7 @@ router.post('/:id/build', async (req, res) => {
       return res.status(400).json({ message: 'Quantity must be > 0' });
     }
     
-    // Verify product belongs to user
+    
     const product = await prisma.product.findFirst({
       where: { id: productId, userId },
     });
@@ -233,7 +226,7 @@ router.post('/:id/build', async (req, res) => {
       include: { item: true },
     });
     
-    // Filter items to only include user's items
+    
     const userRows = rows.filter(row => row.item.userId === userId);
     if (userRows.length === 0) {
       return res.status(400).json({ message: 'No parts linked to this product' });
@@ -245,7 +238,7 @@ router.post('/:id/build', async (req, res) => {
     if (quantity > canBuild) {
       return res.status(400).json({ message: `Not enough stock. Can build ${canBuild}.` });
     }
-    // Subtract quantities in a transaction
+    
     await prisma.$transaction(
       userRows.map((r) =>
         prisma.item.update({

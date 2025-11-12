@@ -3,7 +3,6 @@ import prisma from '../lib/prisma.js';
 
 const router = Router();
 
-// GET /api/items - only user's items
 router.get('/', async (req, res) => {
   try {
     const userId = req.userId;
@@ -45,7 +44,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/items
 router.post('/', async (req, res) => {
   try {
     const userId = req.userId;
@@ -69,13 +67,12 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT /api/items/:id
 router.put('/:id', async (req, res) => {
   try {
     const userId = req.userId;
     const { id } = req.params;
     
-    // Verify item belongs to user
+    
     const existingItem = await prisma.item.findFirst({
       where: { id: Number(id), userId },
     });
@@ -105,13 +102,12 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE /api/items/:id
 router.delete('/:id', async (req, res) => {
   try {
     const userId = req.userId;
     const { id } = req.params;
     
-    // Verify item belongs to user
+    
     const existingItem = await prisma.item.findFirst({
       where: { id: Number(id), userId },
     });

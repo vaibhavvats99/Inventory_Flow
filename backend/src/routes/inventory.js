@@ -3,8 +3,6 @@ import prisma from '../lib/prisma.js';
 
 const router = Router();
 
-// GET /api/inventory/calculate
-// Calculates how many complete products can be made based on user's items where requiredPerProduct > 0
 router.get('/calculate', async (req, res) => {
   try {
     const userId = req.userId;

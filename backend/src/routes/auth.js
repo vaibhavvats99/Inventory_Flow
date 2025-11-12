@@ -5,10 +5,8 @@ import prisma from '../lib/prisma.js';
 
 const router = Router();
 
-// Simple JWT secret (in production, use environment variable)
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-// POST /api/auth/signup
 router.post('/signup', async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -22,7 +20,6 @@ router.post('/signup', async (req, res) => {
       return res.status(409).json({ message: 'Email already registered' });
     }
 
-    // Hash the password before storing
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
@@ -39,8 +36,8 @@ router.post('/signup', async (req, res) => {
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
     });
   } catch (err) {
-    console.error('Signup error:', err);
-    // Provide more specific error messages
+  console.error('Signup error:', err);
+    
     if (err.code === 'P2002') {
       return res.status(409).json({ message: 'Email already registered' });
     }

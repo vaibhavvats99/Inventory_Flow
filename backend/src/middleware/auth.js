@@ -3,7 +3,6 @@ import prisma from '../lib/prisma.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-// Middleware to verify JWT token and add userId to request
 export async function verifyJWT(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
@@ -14,7 +13,7 @@ export async function verifyJWT(req, res, next) {
     const token = authHeader.replace('Bearer ', '');
     const decoded = jwt.verify(token, JWT_SECRET);
     
-    // Verify user still exists in database
+    
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
     });
@@ -23,7 +22,7 @@ export async function verifyJWT(req, res, next) {
       return res.status(401).json({ message: 'User not found. Please log in again.' });
     }
     
-    // Add userId to request object for use in routes
+    
     req.userId = decoded.userId;
     next();
   } catch (err) {
