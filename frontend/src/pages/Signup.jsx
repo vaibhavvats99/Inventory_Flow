@@ -13,11 +13,24 @@ export default function Signup() {
     setError('');
     setLoading(true);
     try {
-      await api.post('/api/auth/signup', form);
-      navigate('/login');
+      const response = await api.post('/api/auth/signup', form);
+      if (response.data) {
+        navigate('/login');
+      }
     } catch (err) {
-      const msg = err?.response?.data?.message || 'Signup failed';
-      setError(msg);
+      console.error('Signup error:', err);
+      // Better error handling
+      if (err.response) {
+        // Server responded with error
+        const msg = err.response.data?.message || 'Signup failed';
+        setError(msg);
+      } else if (err.request) {
+        // Request made but no response (server might be down)
+        setError('Unable to connect to server. Please check if the backend is running.');
+      } else {
+        // Something else happened
+        setError(err.message || 'Signup failed');
+      }
     } finally {
       setLoading(false);
     }

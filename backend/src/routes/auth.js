@@ -39,8 +39,18 @@ router.post('/signup', async (req, res) => {
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
     });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: 'Server error' });
+    console.error('Signup error:', err);
+    // Provide more specific error messages
+    if (err.code === 'P2002') {
+      return res.status(409).json({ message: 'Email already registered' });
+    }
+    if (err.name === 'PrismaClientInitializationError') {
+      return res.status(500).json({ message: 'Database connection error. Please check your database configuration.' });
+    }
+    return res.status(500).json({ 
+      message: err.message || 'Server error',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 
@@ -72,8 +82,18 @@ router.post('/login', async (req, res) => {
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
     });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: 'Server error' });
+    console.error('Signup error:', err);
+    // Provide more specific error messages
+    if (err.code === 'P2002') {
+      return res.status(409).json({ message: 'Email already registered' });
+    }
+    if (err.name === 'PrismaClientInitializationError') {
+      return res.status(500).json({ message: 'Database connection error. Please check your database configuration.' });
+    }
+    return res.status(500).json({ 
+      message: err.message || 'Server error',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 
