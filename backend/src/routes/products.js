@@ -41,13 +41,11 @@ router.post('/', async (req, res) => {
       return res.status(409).json({ message: 'Product with this name already exists' });
     }
     console.error('Product creation error:', err);
-    // Return more specific error message for debugging
     const errorMessage = err.message || 'Server error';
     return res.status(500).json({ message: errorMessage });
   }
 });
 
-// GET /api/products/:id/parts (list components with stock and required)
 router.get('/:id/parts', async (req, res) => {
   try {
     const userId = req.userId;

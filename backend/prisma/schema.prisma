@@ -1,5 +1,7 @@
+// datasource and generator
 generator client {
   provider = "prisma-client-js"
+   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -7,6 +9,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Models
 model User {
   id        Int       @id @default(autoincrement())
   name      String
@@ -24,7 +27,7 @@ model Item {
   name               String
   category           String
   quantity           Int      @default(0)
-  requiredPerProduct Int      @default(0)
+  requiredPerProduct Int      @default(0) // used for inventory calculation
   userId             Int
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
@@ -32,6 +35,7 @@ model Item {
   productLinks       ProductComponent[]
 }
 
+// Simple product model
 model Product {
   id        Int      @id @default(autoincrement())
   name      String
@@ -44,6 +48,7 @@ model Product {
   @@unique([userId, name])
 }
 
+// Map a product to an inventory item with required quantity per product
 model ProductComponent {
   id         Int    @id @default(autoincrement())
   productId  Int

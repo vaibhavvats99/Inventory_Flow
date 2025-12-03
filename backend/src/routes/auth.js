@@ -51,7 +51,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -65,13 +64,11 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Compare the provided password with the hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Create JWT token with user ID
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
 
     return res.json({
@@ -80,7 +77,6 @@ router.post('/login', async (req, res) => {
     });
   } catch (err) {
     console.error('Signup error:', err);
-    // Provide more specific error messages
     if (err.code === 'P2002') {
       return res.status(409).json({ message: 'Email already registered' });
     }
