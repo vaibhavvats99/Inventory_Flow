@@ -1,144 +1,69 @@
 # InventoryFlow
 
+
+Hosted Url := https://inventory-flow-six.vercel.app/login
+
 A simple inventory management system built with React, Express, and Prisma.
 
-## Features
-
-- User authentication with JWT tokens
-- User-specific data isolation (each user sees only their own products and items)
-- Product management
-- Item/Part management
-- Build products from parts
-- Low stock alerts
-- Real-time inventory tracking
-
-## Tech Stack
-
-### Frontend
-- React
-- React Router
-- Axios
-- Vite
-
-### Backend
-- Node.js
-- Express
-- Prisma (SQLite)
-- JWT Authentication
-- bcryptjs for password hashing
-
-## Setup
-
-### Prerequisites
-- Node.js (v14 or higher)
-- npm
-
-### Installation
-
-1. Clone the repository
-```bash
-git clone <repository-url>
-cd Inventory_Flow_Project
-```
-
-2. Install backend dependencies
-```bash
-cd backend
-npm install
-```
-
-3. Install frontend dependencies
-```bash
-cd ../frontend
-npm install
-```
-
-4. Setup database
-```bash
-cd ../backend
-npx prisma generate
-npx prisma db push
-```
-
-5. Start the backend server
-```bash
-cd backend
-npm run dev
-```
-Server runs on `http://localhost:5001`
-
-6. Start the frontend (in a new terminal)
-```bash
-cd frontend
-npm run dev
-```
-Frontend runs on `http://localhost:5173`
-
-## Usage
-
-1. Sign up for a new account or log in
-2. Create products in the Dashboard
-3. Link parts/items to products
-4. Use the Build page to check availability and build products
-5. Monitor low stock alerts
-
-## Project Structure
-
-```
-Inventory_Flow_Project/
-├── backend/
-│   ├── src/
-│   │   ├── routes/      # API routes
-│   │   ├── middleware/  # Auth middleware
-│   │   └── lib/         # Prisma client
-│   ├── prisma/
-│   │   └── schema.prisma # Database schema
-│   └── server.js        # Express server
-└── frontend/
-    ├── src/
-    │   ├── pages/       # React pages
-    │   ├── components/  # Reusable components
-    │   ├── api/         # API configuration
-    │   └── styles.css   # Global styles
-    └── App.jsx          # Main app component
-```
-
-## Deployment
-
-### Backend (Render)
-
-1. Push your backend code to GitHub
-2. Connect your GitHub repo to Render
-3. Set environment variables in Render:
-   - `DATABASE_URL` (if using external database)
-   - `JWT_SECRET` (for production, use a strong random string)
-   - `PORT` (Render sets this automatically)
-4. Your backend will be available at: `https://inventory-flow.onrender.com`
-
-### Frontend (Vercel/Netlify/Render)
-
-1. Push your frontend code to GitHub
-2. Connect your GitHub repo to your hosting service
-3. Set environment variable:
-   - `VITE_API_BASE_URL=https://inventory-flow.onrender.com`
-4. Build command: `npm run build`
-5. Output directory: `dist`
-
-**Important:** Make sure to set the `VITE_API_BASE_URL` environment variable in your frontend hosting service to point to your Render backend URL.
-
-### Local Development
-
-For local development, create a `.env` file in the frontend folder:
-```
-VITE_API_BASE_URL=http://localhost:5001
-```
-
-The code will automatically use `http://localhost:5001` if no environment variable is set.
-
-## Notes
-
-- Each user has their own isolated data
-- Passwords are hashed using bcrypt
-- JWT tokens expire after 7 days
-- Database is SQLite (stored in `backend/prisma/dev.db`)
-
+1. Project Title
+InventoryFlow – Product Library Management System
+2. Problem Statement
+Managing product items such as laptops, panels, car parts, or accessories becomes difficult
+when done manually. “InventoryFlow” aims to simplify this process by providing a
+centralized platform to manage all items — allowing users to add, update, delete, and track
+inventory.
+It can also calculate how many complete products can be built or shipped based on available
+stock.
+3. System Architecture
+Architecture Flow:
+Frontend (React.js) → Backend (Node.js + Express) → Database (MongoDB)
+Stack Details:
+• Frontend: React.js with React Router for navigation, Axios for API requests
+• Backend: Node.js + Express.js for REST API
+• Database: MongoDB (Non-relational)
+• Authentication: JWT-based login/signup
+• Hosting:
+o Frontend: Vercel
+o Backend: Render / Railway
+o Database: MongoDB Atlas
+4. Key Features
+Category Features
+Authentication &
+Authorization
+CRUD Operations Inventory Calculation User signup, login, logout using JWT; role-based access
+(admin/user)
+Create, Read, Update, Delete for product items
+Automatically calculate how many complete products can be
+made or shipped based on stock
+Filtering, Searching &
+Sorting
+Pagination Search items by name, filter by category, and sort by
+quantity/date
+Paginated lists for large item collections
+Category Features
+Frontend Routing Hosting Pages: Home, Login, Dashboard, Items, Reports, Profile
+Frontend (Vercel), Backend (Render/Railway), Database
+(MongoDB Atlas)
+5. Tech Stack
+Layer Technologies
+Frontend React.js, React Router, Axios, TailwindCSS
+Backend Node.js, Express.js
+Database MongoDB (MongoDB Atlas for hosting)
+Authentication JWT (JSON Web Token)
+Hosting Vercel (Frontend), Render/Railway (Backend), MongoDB Atlas (Database)
+6. API Overview
+Endpoint Method Description Access
+/api/auth/signup POST Register new user Public
+/api/auth/login POST Login user Public
+/api/items GET Get all items Authenticated
+/api/items POST Add new item Admin
+/api/items/:id PUT Update item details Admin
+/api/items/:id DELETE Delete item Admin
+/api/inventory/calculate GET Calculate how many complete
+products can be built Authenticated
+7. Summary
+InventoryFlow is a full-stack web application that allows businesses or teams to manage
+their product libraries efficiently.
+It includes user authentication, CRUD operations, search, filtering, pagination, and hosted
+deployment — all built using modern technologies like React, Node.js, Express, and
+MongoDB.

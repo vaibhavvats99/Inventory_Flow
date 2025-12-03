@@ -9,8 +9,16 @@ export default function Build() {
   const [result, setResult] = useState(null);
   const [qty, setQty] = useState(1);
   const [message, setMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
+  const [formData, setFormData] = useState({ name: '' });
+  const [editingId, setEditingId] = useState(null);
 
   const selectedProduct = products.find((p) => p.id === Number(productId));
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   useEffect(() => {
     async function load() {
@@ -55,6 +63,79 @@ export default function Build() {
     }
   }
 
+  async function handleCreateProduct() {
+    if (!formData.name.trim()) {
+      setMessage('Product name cannot be empty');
+      return;
+    }
+    try {
+      const { data } = await api.post('/api/products', { name: formData.name });
+      setProducts([...products, data]);
+      setFormData({ name: '' });
+      setShowModal(false);
+      setMessage('Product created successfully');
+    } catch (err) {
+      setMessage(err?.response?.data?.message || 'Failed to create product');
+    }
+  }
+
+  async function handleUpdateProduct() {
+    if (!formData.name.trim()) {
+      setMessage('Product name cannot be empty');
+      return;
+    }
+    try {
+      const { data } = await api.put(`/api/products/${editingId}`, { name: formData.name });
+      setProducts(products.map((p) => (p.id === editingId ? data : p)));
+      setFormData({ name: '' });
+      setEditingId(null);
+      setShowModal(false);
+      setMessage('Product updated successfully');
+    } catch (err) {
+      setMessage(err?.response?.data?.message || 'Failed to update product');
+    }
+  }
+
+  async function handleDeleteProduct(id) {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        await api.delete(`/api/products/${id}`);
+        setProducts(products.filter((p) => p.id !== id));
+        setMessage('Product deleted successfully');
+      } catch (err) {
+        setMessage(err?.response?.data?.message || 'Failed to delete product');
+      }
+    }
+  }
+
+  function openCreateModal() {
+    setModalType('create');
+    setFormData({ name: '' });
+    setEditingId(null);
+    setShowModal(true);
+  }
+
+  function openEditModal(product) {
+    setModalType('edit');
+    setFormData({ name: product.name });
+    setEditingId(product.id);
+    setShowModal(true);
+  }
+
+  function closeModal() {
+    setShowModal(false);
+    setFormData({ name: '' });
+    setEditingId(null);
+  }
+
+  function handleModalSubmit() {
+    if (modalType === 'create') {
+      handleCreateProduct();
+    } else if (modalType === 'edit') {
+      handleUpdateProduct();
+    }
+  }
+
   return (
     <div className="build-container">
       <div className="build-card">
@@ -65,26 +146,47 @@ export default function Build() {
         
         <div className="build-form-section">
           <div className="form-group">
-            <label className="form-label">
-              Product
-            </label>
-            <select 
-              className="form-input form-select" 
-              value={productId} 
-              onChange={(e) => {
-                setProductId(e.target.value);
-                setResult(null);
-              }}
-            >
-              <option value="">Select product</option>
-              {products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
+            <label className="form-label">Search Product</label>
+            <div className="search-input-wrapper">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="form-input search-input"
+              />
+              {searchTerm && filteredProducts.length > 0 && (
+                <div className="search-dropdown">
+                  {filteredProducts.map((p) => (
+                    <div
+                      key={p.id}
+                      className="search-dropdown-item"
+                      onClick={() => {
+                        setProductId(String(p.id));
+                        setSearchTerm('');
+                        setResult(null);
+                      }}
+                    >
+                      {p.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button className="btn btn-secondary" onClick={openCreateModal}>
+              ➕ Add Product
+            </button>
           </div>
-          
+
+          {productId && (
+            <div className="selected-product-display">
+              <span className="selected-label">Selected:</span>
+              <span className="selected-name">{selectedProduct?.name || 'Loading...'}</span>
+            </div>
+          )}
+
           <div className="form-group">
-            <label className="form-label">
-              Desired quantity
-            </label>
+            <label className="form-label">Desired quantity</label>
             <input 
               type="number" 
               min={1} 
@@ -174,6 +276,35 @@ export default function Build() {
                   })}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {showModal && (
+          <div className="modal-overlay" onClick={closeModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>{modalType === 'create' ? 'Create Product' : 'Edit Product'}</h2>
+                <button className="modal-close" onClick={closeModal}>✕</button>
+              </div>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label className="form-label">Product Name</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ name: e.target.value })}
+                    placeholder="Enter product name"
+                    className="form-input"
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={closeModal}>Cancel</button>
+                <button className="btn btn-primary" onClick={handleModalSubmit}>
+                  {modalType === 'create' ? 'Create' : 'Update'}
+                </button>
+              </div>
             </div>
           </div>
         )}

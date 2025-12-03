@@ -98,7 +98,6 @@ export default function Dashboard() {
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       
       <div className="dashboard-grid">
-        {/* Top-Left: My Products */}
         <section className={`panel panel-products ${showProducts ? 'open' : ''}`}>
           <div className="panel-header">
             <div className="panel-header-content">
@@ -140,7 +139,6 @@ export default function Dashboard() {
           )}
         </section>
 
-        {/* Top-Right: Item List */}
         <section className={`panel panel-items ${showItems ? 'open' : ''}`}>
           <div className="panel-header">
             <div className="panel-header-content">
@@ -206,7 +204,6 @@ export default function Dashboard() {
           )}
         </section>
 
-        {/* Bottom-Left: Link a part */}
         <section className={`panel panel-link ${showLinkForm ? 'open' : ''}`}>
           <div className="panel-header">
             <div className="panel-header-content">
@@ -231,7 +228,6 @@ export default function Dashboard() {
           )}
         </section>
 
-        {/* Bottom-Right: Low Stock Alert */}
         <section className="panel low-stock-card">
           <div className="panel-header">
             <div className="panel-header-content">
@@ -256,7 +252,6 @@ export default function Dashboard() {
         </section>
       </div>
 
-      {/* Add Product Modal */}
       <Modal isOpen={showAddModal} onClose={() => { setShowAddModal(false); setNewProduct(''); setError(''); }} title="Add Product">
         <form onSubmit={createProduct} className="form">
           <label>
@@ -271,7 +266,6 @@ export default function Dashboard() {
         </form>
       </Modal>
 
-      {/* Link Part Modal */}
       <Modal isOpen={showLinkModal} onClose={() => { setShowLinkModal(false); setLink({ name: '', required: 1, stock: '' }); }} title="Link a Part">
         <form onSubmit={addLink} className="form">
           <label>
